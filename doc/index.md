@@ -12,7 +12,7 @@
 :maxdepth: 2
 :caption: User guide
 userguide/getting_started
-userguide/installation_guide
+userguide/installation
 userguide/tutorial
 userguide/api
 :::
@@ -30,6 +30,7 @@ math/references
 :maxdepth: 2
 :caption: Development guide
 development/howto
+development/internal_api
 development/cheatsheet
 development/contributors
 :::

@@ -16,8 +16,10 @@ import os
 import sys
 
 from sphinx.application import Sphinx
-from pyrigi import Graph, Framework
-import pyrigi._input_check as _input_check
+
+import pyrigi._utils._input_check as _input_check
+from pyrigi import Framework
+from pyrigi._utils._doc import generate_myst_tree
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -28,9 +30,9 @@ copyright = "2024, The PyRigi Developers"
 author = "The PyRigi Developers"
 
 # The short X.Y version
-version = "0.4"
+version = "1.0"
 # The full version, including alpha/beta/rc tags
-release = "0.4.0"
+release = "1.0.2"
 
 
 # -- General configuration ---------------------------------------------------
@@ -53,6 +55,7 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",
     "sphinx_proof",
     "myst_nb",
     "sphinxcontrib.bibtex",
@@ -88,14 +91,14 @@ napoleon_preprocess_types = True
 napoleon_custom_sections = ["Definitions", "Methods", "Suggested Improvements"]
 
 autodoc_type_aliases = {
-    "Vertex": "Vertex",
-    "Edge": "Edge",
-    "DirectedEdge": "DirectedEdge",
-    "Point": "Point",
-    "Number": "Number",
-    "Stress": "Stress",
-    "InfFlex": "InfFlex",
-    "Inf": "Inf",
+    "Vertex": ":type:`~pyrigi.data_type.Vertex`",
+    "Edge": ":type:`~pyrigi.data_type.Edge`",
+    "DirectedEdge": ":type:`~pyrigi.data_type.DirectedEdge`",
+    "Point": ":type:`~pyrigi.data_type.Point`",
+    "Number": ":type:`~pyrigi.data_type.Number`",
+    "Stress": ":type:`~pyrigi.data_type.Stress`",
+    "InfFlex": ":type:`~pyrigi.data_type.InfFlex`",
+    "Inf": ":type:`~pyrigi.data_type.Inf`",
 }
 napoleon_attr_annotations = True
 
@@ -216,7 +219,6 @@ html_theme_options = {
     "sidebar_hide_name": False,
     "light_logo": "logo_nofont.png",
     "dark_logo": "logo_nofont_dark.png",
-    "announcement": "<em>The package has not reached a stable version yet!</em>",
     "footer_icons": [
         {
             "name": "GitHub",
@@ -235,7 +237,7 @@ html_theme_options = {
     "source_directory": "doc/",
 }
 
-html_title = "PyRigi"
+html_title = "PyRigi " + version
 
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -361,8 +363,10 @@ def setup(app: Sphinx):
     app.add_lexer("myst", MystLexer)
 
 
+# -----create the documentation of input checks
+
 input_check_str = ""
-for cls in [Graph, Framework]:
+for cls in [Framework]:
     methods = [
         method
         for method in dir(cls)
@@ -384,10 +388,67 @@ Input check methods of {cls.__name__}
 
 input_check_str += """
 
-General input check methods
-===========================
+General input check functions
+=============================
 
 
 """
 
 _input_check.__doc__ = input_check_str
+
+
+# ----------generate module structure with comments------------------------
+
+comments = {
+    ".": {
+        "data_type.py": "definitions of data types",
+        "exception.py": "definitions of exceptions",
+        "warning.py": "definitions of warnings",
+        "graphDB.py": "database of graphs",
+        "frameworkDB.py": "database of frameworks",
+        "plot_style.py": "implementation of Plotstyle(2D/3D)",
+    },
+    "graph": {
+        "extensions.py": "functions for k-extensions",
+        "constructions.py": "functions like  t-sum or intersection",
+        "general.py": "general graph functions",
+        "generic.py": "functions for generic rigidity",
+        "global_.py": "functions for global rigidity",
+        "matroidal.py": "functions for generic rigidity matroid",
+        "redundant.py": "functions for redundant rigidity",
+        "_pebble_digraph.py": "implementation of PebbleDigraph",
+        "sparsity.py": "functions for (k,l)-sparsity",
+        "_input_check.py": "input checks for Graph",
+        "apex.py": "functions for apex graphs",
+        "graph.py": "implementation of Graph",
+        "separating_set.py": "functions for (stable) separating sets",
+    },
+    "graph_drawer": {
+        "graph_drawer.py": "implementation of GraphDrawer",
+    },
+    "framework": {
+        "_plot.py": "auxiliary functions for plotting",
+        "base.py": "implementation of FrameworkBase",
+        "framework.py": "implementation of Framework",
+        "_general.py": "general framework functions",
+        "infinitesimal.py": "functions for infinitesimal rigidity",
+        "matroidal.py": "functions for framework rigidity matroid",
+        "redundant.py": "functions for redundant rigidity",
+        "second_order.py": "functions for prestress stability and 2nd order rig.",
+        "stress.py": "functions for stresses",
+        "transformations.py": "functions like rotate or scale",
+    },
+    "misc": {
+        "_input_check.py": "general input checks",
+        "_documentation_tool.py": "tools for doc generation",
+    },
+    "motion": {
+        "motion.py": "implementation of Motion",
+        "parametric_motion.py": "implementation of ParametricMotion",
+        "approximate_motion.py": "implementation of ApproximateMotion",
+    },
+}
+
+tree_output = generate_myst_tree("../pyrigi", comments, show_line_numbers=False)
+with open("development/howto/pyrigi_structure.txt", "w") as file:
+    file.write(tree_output)

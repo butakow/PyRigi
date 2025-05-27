@@ -16,7 +16,7 @@ A _matroid_ $\mathcal{M}=(E, \mathcal{I})$ is a pair consisting of a finite set 
 A subset of the ground set $E$ that is not independent is called _dependent_. A maximal independent set
 – that is, an independent set that becomes dependent upon adding any element of $E$ –
 is called a _basis_ for the matroid.
-A _circuit_ is a minimal dependent subset of $E$
+An _$\mathcal{M}$-circuit_ (or _circuit_) is a minimal dependent subset of $E$
 – that is, a dependent set whose proper subsets are all independent.
 
 {{pyrigi_crossref}} {meth}`~.Graph.is_Rd_independent`
@@ -64,6 +64,18 @@ $r(D)=|D|-2=r(D-e)$ for all $e\in D$, for some fixed integer $k\geq 0$.
 {{references}} {cite:p}`JacksonNixonSmith2024`
 :::
 
+
+:::{prf:definition} Fundamental circuit
+:label: def-fundamental-circuit
+
+Let $\mathcal{M}=(E, \mathcal{I})$ be a {prf:ref}`matroid <def-matroid>` and $e\in E$.
+Suppose $I\in\mathcal{I}$ is independent but $I+e$ is dependent. 
+Then the _fundamental circuit_ of $e$ with respect to $I$ is the (unique) 
+{prf:ref}`circuit <def-matroid>` contained in $I+e$.
+
+{{references}} {cite:p}`BergJordan2003`
+:::
+
 ## Rigidity Matroid
 
 :::{prf:definition} Rigidity matroid
@@ -77,6 +89,7 @@ The _$d$-dimensional rigidity matroid_ of a {prf:ref}`framework <def-framework>`
 The _generic $d$-dimensional rigidity matroid_ of a graph $G=(V,E)$ is the {prf:ref}`matroid <def-matroid>` $\mathcal{R}_d(G)$ on $E$ in which a set of edges $F\subseteq E$ is independent whenever the corresponding rows of $R_d(G,p)$ are independent, for some (or equivalently every) {prf:ref}`generic realization <def-gen-realization>` $p$ of $G$.
 :::
 
+
 :::{prf:lemma}
 :label: lem-2-sum
 
@@ -84,7 +97,7 @@ Suppose that $G=(V,E)$ is the {prf:ref}`2-sum <def-t-sum>` of $G_1=(V_1,E_1)$ an
 Then $G$ is an $\mathcal{R}_d$-circuit if and only if $G_1$ and $G_2$ are both
 $\mathcal{R}_{d}$-circuits.
 
-{{references}} {cite:p}`GraseggerGulerEtAl2022`
+{{references}} {cite:p}`GraseggerGulerEtAl2022{Lem 10}`
 :::
 
 

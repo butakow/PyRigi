@@ -112,7 +112,7 @@ You can contact a maintainer if you have a `.ipynb` tutorial
 you want to contribute but struggle to get its `.md` version.
 
 
-In case the Poetry environment is activated as described above, Jupyterlab and Jupytext
+In case the Poetry environment is [activated](#dependencies-poetry), Jupyterlab and Jupytext
 can be installed using
 ```
 pip install jupyterlab jupytext
@@ -124,7 +124,7 @@ If the execution of a cell takes long time,
 then import the cell magic
 
 ```python
-from pyrigi.misc import skip_execution
+from pyrigi._utils._doc import skip_execution
 ```
 
 and use it to skip a cell in the documentation compilation as follows

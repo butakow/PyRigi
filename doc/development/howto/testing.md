@@ -1,8 +1,10 @@
 (testing)=
 # Testing
 
-Tests are extremely important to guarantee the realiability of code.
-Please create tests for the functionalities that you implement and place them in the `test` folder, within the appropriate file.
+Tests are extremely important to guarantee the reliability of code.
+Please create tests for the functionalities that you implement and
+place them in the `test` folder, within the appropriate file
+following the [package structure](#pkg_structure).
 Each test should be in the form of a function starting with `test_`.
 Tests can be parametrized, see for instance `test_is_inf_rigid` in `test_framework.py`.
 
@@ -26,7 +28,7 @@ Therefore, before opening a pull request we **strongly advise** to run
 ```
 pytest
 ```
-in the root folder of PyRigi (with Poetry environment activated).
+in the root folder of PyRigi (with Poetry environment [activated](#dependencies-poetry)).
 The reason why the examples in the docstrings are tested is to make sure their outputs are valid,
 they do **not** replace the tests in the `test` folder.
 If you do not want to run doctests, run
@@ -41,15 +43,15 @@ if you want to skip some specific optional feature(s), run
 ```
 pytest -m "not slow_main and not long_local and not opt_feature1 and not opt_feature2"
 ```
-See the file `pyproject.toml` for the markers that specify groups of tests relying on [optional packages](optional-packages).
+See the file `pyproject.toml` for the markers that specify groups of tests relying on [optional packages](#optional-packages).
 
 We mark tests that take longer time according to the following table:
 
-| marker               | per test | total time | execution
-| -------------------- | -------- | ---------- | -------------------
-| standard (no marker) | < 0.5s   | < 2 min    | on merge/PR to `dev`
-| `slow_main`          | < 10s    | < 15 min   | on merge/PR to `main`
-| `long_local`         | > 10s    | hours      | locally when needed
+| marker               | per test | total time | execution             | GitHub action timeout |
+| -------------------- | -------- | ---------- | ----------------------| ----------------------|
+| standard (no marker) | < 0.5s   | < 2 min    | on merge/PR to `dev`  | 5 min                 |
+| `slow_main`          | < 10s    | < 15 min   | on merge/PR to `main` | 30 min                |
+| `long_local`         | > 10s    | hours      | locally when needed   | -                     |
 
 The column `total time` indicates how much time is needed to run all tests with the given marker.
 The time limits per tests are approximate: it is better to have a longer standard tests than none.

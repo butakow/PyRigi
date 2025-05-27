@@ -2,9 +2,12 @@
 This is a module for providing common types of graphs.
 """
 
+from itertools import combinations
+
 import networkx as nx
 
-import pyrigi._input_check as _input_check
+import pyrigi._utils._input_check as _input_check
+from pyrigi.data_type import Sequence, Vertex
 from pyrigi.graph import Graph
 
 
@@ -13,18 +16,77 @@ def Cycle(n: int) -> Graph:
     return Graph(nx.cycle_graph(n))
 
 
-def Complete(n: int) -> Graph:
-    """Return the complete graph on ``n`` vertices."""
-    return Graph(nx.complete_graph(n))
+def Complete(n: int = None, vertices: Sequence[Vertex] = None) -> Graph:
+    """
+    Return the complete graph on ``n`` vertices.
+
+    The vertex labels can also be specified explicitly via
+    the keyword ``vertices``.
+
+    Parameters
+    ----------
+    n:
+        The number of vertices.
+    vertices:
+        An optional parameter for the vertices.
+
+    Examples
+    --------
+    >>> print(Complete(5))
+    Graph with vertices [0, 1, 2, 3, 4] and edges [[0, 1], [0, 2], [0, 3], [0, 4], [1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]
+    >>> print(Complete(5, [0, 1, 2, 3, 4]))
+    Graph with vertices [0, 1, 2, 3, 4] and edges [[0, 1], [0, 2], [0, 3], [0, 4], [1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]
+    >>> print(Complete(vertices=['a', 'b', 'c', 'd']))
+    Graph with vertices ['a', 'b', 'c', 'd'] and edges [['a', 'b'], ['a', 'c'], ['a', 'd'], ['b', 'c'], ['b', 'd'], ['c', 'd']]
+    """  # noqa: E501
+    if vertices is None:
+        _input_check.integrality_and_range(n, "number of vertices n", min_val=0)
+        return Graph(nx.complete_graph(n))
+    if n is None:
+        n = len(vertices)
+    _input_check.equal(len(vertices), n, "number of `vertices`", "the parameter `n`")
+    edges = list(combinations(vertices, 2))
+    return Graph.from_vertices_and_edges(vertices, edges)
+
+
+def CompleteLooped(n: int = None, vertices: Sequence[Vertex] = None) -> Graph:
+    """
+    Return the complete graph on ``n`` vertices with a loop on every vertex.
+
+    The vertex labels can also be specified explicitly via
+    the keyword ``vertices``.
+
+    Parameters
+    ----------
+    n:
+        The number of vertices.
+    vertices:
+        An optional parameter for the vertices.
+
+    Examples
+    --------
+    >>> print(CompleteLooped(3))
+    Graph with vertices [0, 1, 2] and edges [[0, 0], [0, 1], [0, 2], [1, 1], [1, 2], [2, 2]]
+    >>> print(CompleteLooped(vertices=['a', 'b']))
+    Graph with vertices ['a', 'b'] and edges [['a', 'a'], ['a', 'b'], ['b', 'b']]
+    """  # noqa: E501
+    graph = Complete(n=n, vertices=vertices)
+    graph = Graph.from_vertices_and_edges(
+        graph.vertex_list(), graph.edge_list() + [[v, v] for v in graph.vertex_list()]
+    )
+    return graph
 
 
 def Path(n: int) -> Graph:
     """Return the path graph with ``n`` vertices."""
+    _input_check.integrality_and_range(n, "number of vertices n", min_val=0)
     return Graph(nx.path_graph(n))
 
 
 def CompleteBipartite(n1: int, n2: int) -> Graph:
     """Return the complete bipartite graph on ``n1+n2`` vertices."""
+    _input_check.integrality_and_range(n1, "number of vertices n1", min_val=1)
+    _input_check.integrality_and_range(n2, "number of vertices n2", min_val=1)
     return Graph(nx.complete_multipartite_graph(n1, n2))
 
 
@@ -66,11 +128,11 @@ def CubeWithDiagonal() -> Graph:
 
 def DoubleBanana(dim: int = 3, t: int = 2) -> Graph:
     r"""
-    Return the `dim`-dimensional double banana graph.
+    Return the ``dim``-dimensional double banana graph.
 
     Definitions
     -----
-    * :prf:ref:`Generalized Double Banana <def-generalized-double-banana>`
+    :prf:ref:`Generalized Double Banana <def-generalized-double-banana>`
 
     Parameters
     ----------
@@ -81,13 +143,13 @@ def DoubleBanana(dim: int = 3, t: int = 2) -> Graph:
 
     Examples
     --------
-    >>> DoubleBanana()
+    >>> print(DoubleBanana())
     Graph with vertices [0, 1, 2, 3, 4, 5, 6, 7] and edges [[0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [2, 3], [2, 4], [3, 4], [5, 6], [5, 7], [6, 7]]
-    >>> DoubleBanana(dim = 4)
+    >>> print(DoubleBanana(dim = 4))
     Graph with vertices [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] and edges [[0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7], [0, 8], [0, 9], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [2, 3], [2, 4], [2, 5], [3, 4], [3, 5], [4, 5], [6, 7], [6, 8], [6, 9], [7, 8], [7, 9], [8, 9]]
     """  # noqa: E501
-    _input_check.greater_equal(dim, 3, "dimension")
-    _input_check.greater_equal(t, 2, "parameter t")
+    _input_check.integrality_and_range(dim, "dimension dim", min_val=3)
+    _input_check.integrality_and_range(t, "parameter t", min_val=2)
     _input_check.smaller_equal(t, dim - 1, "parameter t", "dim - 1")
 
     r = (dim + 2) - t
@@ -172,7 +234,13 @@ def Dodecahedral() -> Graph:
 
 
 def Frustum(n: int) -> Graph:
-    """Return the :prf:ref:`n-Frustum graph <def-n-frustum>`"""
+    """
+    Return the ``n``-Frustum graph.
+
+    Definitions
+    -----------
+    :prf:ref:`n-Frustum graph <def-n-frustum>`
+    """
     return Graph(
         [(j, (j + 1) % n) for j in range(0, n)]
         + [(j, (j + 1 - n) % n + n) for j in range(n, 2 * n)]
@@ -180,9 +248,9 @@ def Frustum(n: int) -> Graph:
     )
 
 
-def K66MinusPerfectMatching():
+def K66MinusPerfectMatching() -> Graph:
     """
-    Return a complete bipartite graph minus a perfect matching.
+    Return the complete bipartite graph minus a perfect matching.
 
     A matching is formed by six non-incident edges.
     """
@@ -193,16 +261,18 @@ def K66MinusPerfectMatching():
 
 def CnSymmetricFourRegular(n: int = 8) -> Graph:
     """
-    Return a $C_n$-symmetric graph.
+    Return a $C_n$-symmetric 4-regular graph.
+
+    The value ``n`` must be even and at least 8.
 
     Definitions
     -----------
     * :prf:ref:`Example with a free group action <def-Cn-symmetric>`
     """
-    if not n % 2 == 0 or n < 8:
+    _input_check.integrality_and_range(n, "number of vertices n", min_val=8)
+    if not n % 2 == 0:
         raise ValueError(
-            "To generate this graph, the cyclic group "
-            + "must have an even order of at least 8!"
+            "To generate this graph, the cyclic group " + "must have an even order!"
         )
     G = Graph()
     G.add_edges([(0, n - 1), (n - 3, 0), (n - 2, 1), (n - 1, 2)])
@@ -213,23 +283,23 @@ def CnSymmetricFourRegular(n: int = 8) -> Graph:
     return G
 
 
-def CnSymmetricFourRegularWithFixedVertex(n: int = 8) -> Graph:
+def CnSymmetricWithFixedVertex(n: int = 8) -> Graph:
     """
     Return a $C_n$-symmetric graph with a fixed vertex.
 
     The value ``n`` must be even and at least 8.
 
     The returned graph satisfies the expected symmetry-adapted Laman
-    count for rotation but is infinitesimally flexible.
+    count for rotation but is (generically) infinitesimally flexible.
 
     Definitions
     -----------
-    * :prf:ref:`Example with joint at origin <def-Cn-symmetric-joint-at-origin>`
+    :prf:ref:`Example with joint at origin <def-Cn-symmetric-joint-at-origin>`
     """
-    if not n % 2 == 0 or n < 8:
+    _input_check.integrality_and_range(n, "order of cyclic group n", min_val=8)
+    if not n % 2 == 0:
         raise ValueError(
-            "To generate this graph, the cyclic group "
-            + "must have an even order of at least 8!"
+            "To generate this graph, the cyclic group " + "must have an even order!"
         )
     G = CnSymmetricFourRegular(n)
     G.add_edges([(0, n), (n, 2 * n), (n + 1, 2 * n - 1), (n, 2 * n - 2)])
@@ -238,7 +308,7 @@ def CnSymmetricFourRegularWithFixedVertex(n: int = 8) -> Graph:
     return G
 
 
-def ThreeConnectedR3Circuit():
+def ThreeConnectedR3Circuit() -> Graph:
     """
     Return a 3-connected $R_3$-circuit.
 
@@ -281,3 +351,26 @@ def ThreeConnectedR3Circuit():
             (11, 12),
         ]
     )
+
+
+def Wheel(n: int) -> Graph:
+    """
+    Create the wheel graph on ``n+1`` vertices.
+    """
+    _input_check.integrality_and_range(n + 1, "number of vertices n+1", min_val=4)
+    G = Cycle(n)
+    G.add_edges([(i, n) for i in range(n)])
+    return G
+
+
+def Grid(n1: int, n2: int) -> Graph:
+    """
+    Create the grid graph on with ``n1`` rows and ``n2`` columns.
+    """
+    _input_check.integrality_and_range(n1, "number of rows ``n1``", min_val=1)
+    _input_check.integrality_and_range(n2, "number of columns ``n2``", min_val=1)
+    horizontal = [
+        (i + j * n2, i + 1 + j * n2) for i in range(n2 - 1) for j in range(n1)
+    ]
+    vertical = [(i + j * n2, i + n2 + j * n2) for i in range(n2) for j in range(n1 - 1)]
+    return Graph.from_vertices_and_edges(range(n1 * n2), vertical + horizontal)

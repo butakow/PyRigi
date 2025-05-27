@@ -14,13 +14,29 @@ def test_Cycle():
 
 
 def test_Complete():
-    for n in range(1, 10):
+    for n in range(0, 10):
         G = graphs.Complete(n)
         assert (
             G.number_of_nodes() == n
             and G.number_of_edges() == n * (n - 1) / 2
             and all([G.degree[v] == n - 1 for v in G.nodes])
         )
+        G = graphs.Complete(n, [f"a_{i}" for i in range(n)])
+        assert (
+            G.number_of_nodes() == n
+            and G.number_of_edges() == n * (n - 1) / 2
+            and all([G.degree[v] == n - 1 for v in G.nodes])
+        )
+        G = graphs.Complete(vertices=[f"a_{i}" for i in range(n)])
+        assert (
+            G.number_of_nodes() == n
+            and G.number_of_edges() == n * (n - 1) / 2
+            and all([G.degree[v] == n - 1 for v in G.nodes])
+        )
+        with pytest.raises(ValueError):
+            graphs.Complete(n, [f"a_{i}" for i in range(n + 1)])
+            graphs.Complete(n + 1, [f"a_{i}" for i in range(n)])
+            graphs.Complete([f"a_{i}" for i in range(n)])
 
 
 def test_Path():
@@ -124,14 +140,13 @@ def test_CnSymmetricFourRegular():
         )
 
 
-def test_CnSymmetricFourRegularWithFixedVertex():
+def test_CnSymmetricWithFixedVertex():
     with pytest.raises(ValueError):
-        graphs.CnSymmetricFourRegularWithFixedVertex(6)
-        graphs.CnSymmetricFourRegularWithFixedVertex(9)
+        graphs.CnSymmetricWithFixedVertex(6)
+        graphs.CnSymmetricWithFixedVertex(9)
 
     for i in range(4, 10):
-        G = graphs.CnSymmetricFourRegularWithFixedVertex(2 * i)
-        print(G.number_of_edges())
+        G = graphs.CnSymmetricWithFixedVertex(2 * i)
         assert (
             G.number_of_nodes() == 4 * i + 1
             and G.number_of_edges() == 10 * i
@@ -147,3 +162,29 @@ def test_Icosahedral():
 def test_Dodecahedron():
     G = graphs.Dodecahedral()
     assert G.number_of_nodes() == 20 and G.number_of_edges() == 30
+
+
+def test_Wheel():
+    with pytest.raises(ValueError):
+        graphs.Wheel(1)
+        graphs.Wheel(2)
+
+    for k in range(3, 10):
+        G = graphs.Wheel(k)
+        assert (
+            G.number_of_nodes() == k + 1
+            and G.number_of_edges() == 2 * k
+            and all([G.degree[v] in [3, k] for v in G.nodes])
+        )
+
+
+def test_Grid():
+    with pytest.raises(ValueError):
+        graphs.Grid(0, 1)
+    with pytest.raises(ValueError):
+        graphs.Grid(1, 0)
+    for n1 in range(1, 5):
+        for n2 in range(1, 5):
+            G = graphs.Grid(n1, n2)
+            assert G.number_of_nodes() == n1 * n2
+            assert G.number_of_edges() == 2 * n1 * n2 - n1 - n2

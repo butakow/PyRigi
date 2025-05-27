@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.6
+    jupytext_version: 1.16.7
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -22,7 +22,7 @@ This notebook can be downloaded {download}`here <../../notebooks/plotting.ipynb>
 import pyrigi.frameworkDB as frameworks
 import pyrigi.graphDB as graphs
 from pyrigi import Graph, Framework
-from pyrigi.misc import skip_execution
+from pyrigi._utils._doc import skip_execution
 ```
 
 Methods {meth}`.Graph.plot` and {meth}`.Framework.plot` offer various plotting options.
@@ -122,7 +122,7 @@ G.plot(plot_style, placement=realization, vertex_shape='v', edge_style='solid')
 ```
 
 We can also change some values of `plot_style` in two different ways.
-The first is using method `update`.
+The first is using method {meth}`.PlotStyle.update`.
 
 ```{code-cell} ipython3
 plot_style.update(vertex_color='green')
@@ -160,7 +160,7 @@ If a partition of the edges is specified, then each part is colored differently.
 P.plot(plot_style, placement=realization, edge_colors_custom=[[[0, 1], [2, 3]], [[1, 2]], [[5, 4], [4, 3]]])
 ```
 
-If the partition is incomplete, the missing edges get `plot_style.edge_color`.
+If the partition is incomplete, the missing edges get {attr}`.PlotStyle.edge_color`.
 
 ```{code-cell} ipython3
 plot_style.update(edge_color='green')
@@ -179,7 +179,8 @@ P30.plot(
 )
 ```
 
-Another possibility is to provide a dictionary assigning to a color a list of edges. Missing edges are again get `plot_style.edge_color`.
+Another possibility is to provide a dictionary assigning to a color a list of edges.
+Missing edges again get {attr}`.PlotStyle.edge_color`.
 
 ```{code-cell} ipython3
 P.plot(plot_style,
@@ -361,15 +362,12 @@ be looked up in the corresponding API reference: {class}`~.PlotStyle`.
 
 ```{code-cell} ipython3
 F = frameworks.Octahedron(realization="Bricard_plane")
-inf_flex = {v: [-qt for qt in q] 
-            for v, q in F._transform_inf_flex_to_pointwise(F.inf_flexes()[0]).items()
-}
-F.plot(inf_flex=inf_flex, 
+F.plot(inf_flex=0, 
        stress=0,
        flex_length=0.25,
        stress_fontsize=11,
        axis_scales=(0.625,0.625,0.625),
-       stress_label_positions={e: 0.6 for e in F.graph().edges}
+       stress_label_positions={e: 0.6 for e in F.graph.edges}
 )
 ```
 
