@@ -10,6 +10,7 @@ import networkx as nx
 
 from pyrigi.data_type import Edge, Sequence, Vertex
 from pyrigi.exception import LoopError
+from pyrigi.graph import _general as graph_general
 
 
 def no_loop(graph: nx.Graph) -> None:
@@ -81,7 +82,7 @@ def is_edge(graph: nx.Graph, edge: Edge, vertices: Sequence[Vertex] = None) -> N
         If ``None``, the function considers all vertices of the graph.
     """
     edge_format(graph, edge)
-    if vertices and (not edge[0] in vertices or not edge[1] in vertices):
+    if vertices and (edge[0] not in vertices or edge[1] not in vertices):
         raise ValueError(
             f"The elements of the edge {edge} are not among vertices {vertices}!"
         )
@@ -136,13 +137,11 @@ def is_vertex_order(
         If ``None``, then all vertices are returned
         using :meth:`~Graph.vertex_list`.
     """
-    from pyrigi import Graph
-
     if vertex_order is None:
-        return Graph.vertex_list(graph)
+        return graph_general.vertex_list(graph)
     else:
         if not graph.number_of_nodes() == len(vertex_order) or not set(
-            Graph.vertex_list(graph)
+            graph_general.vertex_list(graph)
         ) == set(vertex_order):
             raise ValueError(
                 "The vertices in `"
@@ -169,13 +168,14 @@ def is_edge_order(
         If ``None``, then all edges are returned
         using :meth:`~Graph.edge_list`.
     """
-    from pyrigi import Graph
-
     if edge_order is None:
-        return Graph.edge_list(graph)
+        return graph_general.edge_list(graph)
     else:
         if not graph.number_of_edges() == len(edge_order) or not all(
-            [set(e) in [set(e) for e in edge_order] for e in Graph.edge_list(graph)]
+            [
+                set(e) in [set(e) for e in edge_order]
+                for e in graph_general.edge_list(graph)
+            ]
         ):
             raise ValueError(
                 "The edges in `" + name + "` must be exactly "

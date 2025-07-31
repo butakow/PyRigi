@@ -17,8 +17,6 @@ import sys
 
 from sphinx.application import Sphinx
 
-import pyrigi._utils._input_check as _input_check
-from pyrigi import Framework
 from pyrigi._utils._doc import generate_myst_tree
 
 sys.path.insert(0, os.path.abspath(".."))
@@ -30,9 +28,9 @@ copyright = "2024, The PyRigi Developers"
 author = "The PyRigi Developers"
 
 # The short X.Y version
-version = "1.0"
+version = "1.1"
 # The full version, including alpha/beta/rc tags
-release = "1.0.2"
+release = "1.1.1"
 
 
 # -- General configuration ---------------------------------------------------
@@ -165,6 +163,8 @@ mathjax3_config = {
             "NN": "{\\mathbb{N}}",  # natural numbers (including 0)
             "PP": "{\\mathbb{P}}",  # projective space
             "KK": "{\\mathbb{K}}",  # a field
+            "tred": "{\\text{red}}",  # 'red' as a text for colorings
+            "tblue": "{\\text{blue}}",  # 'blue' as a text for colorings
         },
     }
 }
@@ -363,40 +363,6 @@ def setup(app: Sphinx):
     app.add_lexer("myst", MystLexer)
 
 
-# -----create the documentation of input checks
-
-input_check_str = ""
-for cls in [Framework]:
-    methods = [
-        method
-        for method in dir(cls)
-        if method.startswith("_input_check_") and callable(getattr(cls, method))
-    ]
-    input_check_str += (
-        f"""
-Input check methods of {cls.__name__}
-======================={''.join(["=" for _ in range(len(cls.__name__))])}
-
-.. automethod:: {cls.__module__}.{cls.__name__}."""
-        + f"""
-
-.. automethod:: {cls.__module__}.{cls.__name__}.""".join(
-            methods
-        )
-        + "\n\n"
-    )
-
-input_check_str += """
-
-General input check functions
-=============================
-
-
-"""
-
-_input_check.__doc__ = input_check_str
-
-
 # ----------generate module structure with comments------------------------
 
 comments = {
@@ -409,9 +375,10 @@ comments = {
         "plot_style.py": "implementation of Plotstyle(2D/3D)",
     },
     "graph": {
+        "export.py": "functions for export to TikZ",
         "extensions.py": "functions for k-extensions",
-        "constructions.py": "functions like  t-sum or intersection",
-        "general.py": "general graph functions",
+        "constructions.py": "functions like t-sum or intersection",
+        "_general.py": "general graph functions",
         "generic.py": "functions for generic rigidity",
         "global_.py": "functions for global rigidity",
         "matroidal.py": "functions for generic rigidity matroid",
@@ -429,10 +396,12 @@ comments = {
     "framework": {
         "_plot.py": "auxiliary functions for plotting",
         "base.py": "implementation of FrameworkBase",
+        "export.py": "functions for export to TikZ, STL",
         "framework.py": "implementation of Framework",
         "_general.py": "general framework functions",
         "infinitesimal.py": "functions for infinitesimal rigidity",
         "matroidal.py": "functions for framework rigidity matroid",
+        "plot.py": "functions for plotting",
         "redundant.py": "functions for redundant rigidity",
         "second_order.py": "functions for prestress stability and 2nd order rig.",
         "stress.py": "functions for stresses",
@@ -446,6 +415,14 @@ comments = {
         "motion.py": "implementation of Motion",
         "parametric_motion.py": "implementation of ParametricMotion",
         "approximate_motion.py": "implementation of ApproximateMotion",
+    },
+    "_utils": {
+        "_conversion.py": "conversions between data types",
+        "_doc.py": "tools for generating documentation",
+        "_input_check.py": "functions for input checks",
+        "_zero_check.py": "functions for checking symbolic zeros",
+        "linear_algebra.py": "functions for linear algebra",
+        ".py": "",
     },
 }
 

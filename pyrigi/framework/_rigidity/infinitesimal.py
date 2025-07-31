@@ -20,6 +20,7 @@ from pyrigi.data_type import (
     Vertex,
 )
 from pyrigi.framework.base import FrameworkBase
+from pyrigi.graph import _general as graph_general
 from pyrigi.graphDB import Complete as CompleteGraph
 
 
@@ -72,8 +73,7 @@ def rigidity_matrix(
         [
             flatten(
                 [
-                    delta(e, w)
-                    * (framework._realization[e[0]] - framework._realization[e[1]])
+                    delta(e, w) * (framework[e[0]] - framework[e[1]])
                     for w in vertex_order
                 ]
             )
@@ -167,7 +167,7 @@ def trivial_inf_flexes(
     [ 0]])]
     """
     vertex_order = _graph_input_check.is_vertex_order(framework._graph, vertex_order)
-    dim = framework._dim
+    dim = framework.dim
     translations = [
         Matrix.vstack(*[A for _ in vertex_order]) for A in Matrix.eye(dim).columnspace()
     ]
@@ -179,7 +179,7 @@ def trivial_inf_flexes(
             A[j, i] = -1
             basis_skew_symmetric += [A]
     inf_rot = [
-        Matrix.vstack(*[A * framework._realization[v] for v in vertex_order])
+        Matrix.vstack(*[A * framework[v] for v in vertex_order])
         for A in basis_skew_symmetric
     ]
     matrix_inf_flexes = Matrix.hstack(*(translations + inf_rot))
@@ -374,7 +374,7 @@ def is_inf_rigid(
     False
     """
 
-    if framework._graph.number_of_nodes() <= framework._dim + 1:
+    if framework._graph.number_of_nodes() <= framework.dim + 1:
         return rigidity_matrix_rank(
             framework, numerical=numerical, tolerance=tolerance
         ) == binomial(framework._graph.number_of_nodes(), 2)
@@ -434,7 +434,7 @@ def is_min_inf_rigid(framework: FrameworkBase, use_copy: bool = True, **kwargs) 
     F = framework
     if use_copy:
         F = deepcopy(framework)
-    for edge in F._graph.edge_list():
+    for edge in graph_general.edge_list(F._graph):
         F.delete_edge(edge)
         if is_inf_rigid(F, **kwargs):
             F.add_edge(edge)
@@ -444,7 +444,9 @@ def is_min_inf_rigid(framework: FrameworkBase, use_copy: bool = True, **kwargs) 
 
 
 def _transform_inf_flex_to_pointwise(
-    framework: FrameworkBase, inf_flex: Matrix, vertex_order: Sequence[Vertex] = None
+    framework: FrameworkBase,
+    inf_flex: Matrix | Sequence,
+    vertex_order: Sequence[Vertex] = None,
 ) -> dict[Vertex, list[Number]]:
     r"""
     Transform the natural data type of a flex (``Matrix``) to a
@@ -474,6 +476,18 @@ def _transform_inf_flex_to_pointwise(
     infinitesimal flex for plotting purposes.
     """  # noqa: E501
     vertex_order = _graph_input_check.is_vertex_order(framework._graph, vertex_order)
+    if (
+        isinstance(inf_flex, Matrix)
+        and (
+            inf_flex.shape[1] != 1
+            or inf_flex.shape[0] != framework.dim * len(vertex_order)
+        )
+    ) or (
+        isinstance(inf_flex, Sequence)
+        and len(inf_flex) != framework.dim * len(vertex_order)
+    ):
+        raise ValueError("The provided `inf_flex` does not have the correct format.")
+
     return {
         vertex_order[i]: [inf_flex[i * framework.dim + j] for j in range(framework.dim)]
         for i in range(len(vertex_order))
@@ -565,11 +579,14 @@ def is_dict_inf_flex(
     )
 
     dict_to_list = []
-    for v in framework._graph.vertex_list():
+    for v in graph_general.vertex_list(framework._graph):
         dict_to_list += list(vert_to_flex[v])
 
     return is_vector_inf_flex(
-        framework, dict_to_list, vertex_order=framework._graph.vertex_list(), **kwargs
+        framework,
+        dict_to_list,
+        vertex_order=graph_general.vertex_list(framework._graph),
+        **kwargs,
     )
 
 
@@ -692,11 +709,14 @@ def is_dict_nontrivial_inf_flex(
     )
 
     dict_to_list = []
-    for v in framework._graph.vertex_list():
+    for v in graph_general.vertex_list(framework._graph):
         dict_to_list += list(vert_to_flex[v])
 
     return is_vector_nontrivial_inf_flex(
-        framework, dict_to_list, vertex_order=framework._graph.vertex_list(), **kwargs
+        framework,
+        dict_to_list,
+        vertex_order=graph_general.vertex_list(framework._graph),
+        **kwargs,
     )
 
 
@@ -798,11 +818,14 @@ def is_dict_trivial_inf_flex(
     )
 
     dict_to_list = []
-    for v in framework._graph.vertex_list():
+    for v in graph_general.vertex_list(framework._graph):
         dict_to_list += list(inf_flex[v])
 
     return is_vector_trivial_inf_flex(
-        framework, dict_to_list, vertex_order=framework._graph.vertex_list(), **kwargs
+        framework,
+        dict_to_list,
+        vertex_order=graph_general.vertex_list(framework._graph),
+        **kwargs,
     )
 
 

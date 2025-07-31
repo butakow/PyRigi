@@ -20,7 +20,7 @@ from pyrigi.data_type import (
     Sequence,
     Vertex,
 )
-from pyrigi.framework._plot import _plot
+from pyrigi.framework._plot import plot as framework_plot
 from pyrigi.graph import Graph
 from pyrigi.plot_style import PlotStyle, PlotStyle2D, PlotStyle3D
 
@@ -191,21 +191,26 @@ class Motion(object):
 
         x_coords, y_coords, z_coords = [
             [
-                realization[v][0]
+                realization[v][i]
                 for v in self._graph.nodes
                 for realization in realizations
             ]
             for i in range(3)
         ]
-        min_val = min(x_coords + y_coords + z_coords) - plot_style.padding
-        max_val = max(x_coords + y_coords + z_coords) + plot_style.padding
-        aspect_ratio = plot_style.axis_scales
-        ax.set_zlim(min_val * aspect_ratio[2], max_val * aspect_ratio[2])
-        ax.set_ylim(min_val * aspect_ratio[1], max_val * aspect_ratio[1])
-        ax.set_xlim(min_val * aspect_ratio[0], max_val * aspect_ratio[0])
+
+        ax.scatter(
+            [min(x_coords) - plot_style.padding, max(x_coords) + plot_style.padding],
+            [min(y_coords) - plot_style.padding, max(y_coords) + plot_style.padding],
+            [min(z_coords) - plot_style.padding, max(z_coords) + plot_style.padding],
+            color="white",
+            s=plot_style.vertex_size,
+            marker=plot_style.vertex_shape,
+        )
+
+        ax.set_box_aspect(plot_style.axis_scales)
 
         # Update the plot_style instance with any passed keyword arguments
-        edge_color_array, edge_list_ref = _plot.resolve_edge_colors(
+        edge_color_array, edge_list_ref = framework_plot._resolve_edge_colors(
             self, plot_style.edge_color, edge_colors_custom
         )
 
@@ -400,7 +405,7 @@ class Motion(object):
         )
 
         # Update the plot_style instance with any passed keyword arguments
-        edge_color_array, edge_list_ref = _plot.resolve_edge_colors(
+        edge_color_array, edge_list_ref = framework_plot._resolve_edge_colors(
             self, plot_style.edge_color, edge_colors_custom
         )
 

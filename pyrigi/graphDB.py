@@ -72,7 +72,7 @@ def CompleteLooped(n: int = None, vertices: Sequence[Vertex] = None) -> Graph:
     """  # noqa: E501
     graph = Complete(n=n, vertices=vertices)
     graph = Graph.from_vertices_and_edges(
-        graph.vertex_list(), graph.edge_list() + [[v, v] for v in graph.vertex_list()]
+        graph.nodes, list(graph.edges) + [[v, v] for v in graph.nodes]
     )
     return graph
 
@@ -102,6 +102,16 @@ def Diamond() -> Graph:
     return Graph([(0, 1), (1, 2), (2, 3), (3, 0), (0, 2)])
 
 
+def DiamondWithZeroExtension():
+    """
+    Return the diamond graph with zero extension
+    (the diamond with 2 extra connected edges from the opposite spikes).
+    """
+    return Graph(
+        [(0, 1), (1, 2), (2, 3), (3, 0), (0, 2), (1, 4), (3, 4)],
+    )
+
+
 def ThreePrism() -> Graph:
     """Return the 3-prism graph."""
     return Graph(
@@ -113,6 +123,17 @@ def ThreePrismPlusEdge() -> Graph:
     """Return the 3-prism graph with one extra edge."""
     return Graph(
         [(0, 1), (1, 2), (0, 2), (3, 4), (4, 5), (3, 5), (0, 3), (1, 4), (2, 5), (0, 5)]
+    )
+
+
+def ThreePrismPlusTriangleOnSide():
+    """
+    Return the 3-prism graph where there is
+    extra triangle on one of the connecting edges.
+    """
+    return Graph(
+        [(0, 1), (1, 2), (0, 2), (3, 4), (4, 5), (3, 5)]
+        + [(0, 3), (1, 4), (2, 5), (0, 6), (3, 6)]
     )
 
 

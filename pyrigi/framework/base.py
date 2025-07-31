@@ -12,6 +12,7 @@ import sympy as sp
 from sympy import Matrix
 
 import pyrigi._utils._input_check as _input_check
+from pyrigi.graph import _general as graph_general
 import pyrigi.graph._utils._input_check as _graph_input_check
 from pyrigi._utils._doc import doc_category, generate_category_tables
 from pyrigi.data_type import (
@@ -104,7 +105,7 @@ class FrameworkBase(object):
             + ", ".join(
                 [
                     f"{v}:{tuple(self._realization[v])}"
-                    for v in self._graph.vertex_list()
+                    for v in graph_general.vertex_list(self._graph)
                 ]
             )
             + "}"
@@ -525,6 +526,13 @@ class FrameworkBase(object):
         """
         Check whether a vertex appears as key in a realization and
         raise an error otherwise.
+
+        Parameters
+        ----------
+        vertex:
+            The vertex to check.
+        realization:
+            The realization to check.
         """
         if realization is None:
             realization = self._realization
@@ -535,6 +543,10 @@ class FrameworkBase(object):
         """
         Check whether a point has the right dimension and
         raise an error otherwise.
+
+        Parameters
+        ----------
+        point:
         """
         if not len(point) == self.dim:
             raise ValueError(
