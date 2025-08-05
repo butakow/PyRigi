@@ -233,4 +233,5 @@ _critically $k$-vertex apex graph_ or _critically $k$-edge apex graph_, respecti
 
 :::{toctree}
 :maxdepth: 2
+graph-theory/gain_graphs
 graph-theory/examples
