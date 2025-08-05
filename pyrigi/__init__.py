@@ -10,3 +10,4 @@ from pyrigi.graph import Graph
 from pyrigi.graph_drawer import GraphDrawer
 from pyrigi.motion import ApproximateMotion, Motion, ParametricMotion
 from pyrigi.plot_style import PlotStyle, PlotStyle2D, PlotStyle3D
+from pyrigi.gain_graph import GainGraph
