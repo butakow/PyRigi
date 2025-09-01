@@ -7,6 +7,7 @@ The interface of the classes listed below is considered stable.
 api/graph
 api/framework
 api/motion
+api/gain_graph
 api/exception
 api/datatype
 api/graphdrawer
