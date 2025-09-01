@@ -78,7 +78,7 @@ napoleon_google_docstring = False
 napoleon_numpy_docstring = True
 napoleon_include_init_with_doc = False
 napoleon_include_private_with_doc = False
-napoleon_include_special_with_doc = True
+napoleon_include_special_with_doc = False
 napoleon_use_admonition_for_examples = False
 napoleon_use_admonition_for_notes = False
 napoleon_use_admonition_for_references = False
@@ -92,15 +92,23 @@ autodoc_type_aliases = {
     "Vertex": ":type:`~pyrigi.data_type.Vertex`",
     "Edge": ":type:`~pyrigi.data_type.Edge`",
     "DirectedEdge": ":type:`~pyrigi.data_type.DirectedEdge`",
+    "DirectedMultiEdge": ":type:`~pyrigi.data_type.DirectedMultiEdge`",
     "Point": ":type:`~pyrigi.data_type.Point`",
     "Number": ":type:`~pyrigi.data_type.Number`",
     "Stress": ":type:`~pyrigi.data_type.Stress`",
     "InfFlex": ":type:`~pyrigi.data_type.InfFlex`",
     "Inf": ":type:`~pyrigi.data_type.Inf`",
+    "Group": ":type:`~pyrigi.data_type.Group`",
+    "GroupElement": ":type:`~pyrigi.data_type.GroupElement`",
+    "GainFunction": ":type:`~pyrigi.data_type.GainFunction`",
 }
 napoleon_attr_annotations = True
 
 autodoc_typehints = "description"
+autodoc_default_options = {
+    "special-members": True,
+    "exclude-members": "__init__, __weakref__",
+}
 
 autosummary_generate = True
 numpydoc_show_inherited_class_members = False
@@ -423,6 +431,12 @@ comments = {
         "_zero_check.py": "functions for checking symbolic zeros",
         "linear_algebra.py": "functions for linear algebra",
         ".py": "",
+    },
+    "gain_graph": {
+        "gain_graph.py": "implementation of GainGraph",
+        "base.py": "implementation of GainGraphBase",
+        "_general.py": "general gain graph functions",
+        "switching.py": "functions related to the switching operation",
     },
 }
 

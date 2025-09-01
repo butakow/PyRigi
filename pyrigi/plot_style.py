@@ -406,7 +406,7 @@ class PlotStyle2D(PlotStyle):
     >>> plot_style_2d.edges_as_arcs = False
     >>> F.plot2D(plot_style_2d)
 
-    Or use the :meth:`.update` method:
+    Or use the :meth:`~PlotStyle.update` method:
 
     >>> plot_style_2d.update(aspect_ratio=1.0, edges_as_arcs=True, arc_angle=np.pi/4)
     >>> F.plot2D(plot_style_2d)
@@ -494,7 +494,7 @@ class PlotStyle3D(PlotStyle):
     >>> plot_style_3d.axis_scales = (1.0, 2, 1.0)
     >>> F.plot(plot_style_3d)
 
-    Or use the :meth:`.update` method:
+    Or use the :meth:`~PlotStyle.update` method:
 
     >>> plot_style_3d.update(padding=0.15, axis_scales=(1.0, 1.0, 3))
     """

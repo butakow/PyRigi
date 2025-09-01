@@ -5,6 +5,7 @@ Module for standard input checks.
 from __future__ import annotations
 
 import math
+from pyrigi.data_type import Group
 
 
 def dimension(dim: int) -> None:
@@ -195,3 +196,12 @@ def pebble_values(K: int, L: int) -> None:
 
     # Check the conditions on relation
     greater(2 * K, L, "value 2*K", "L")
+
+
+def group(g: Group) -> None:
+    """
+    Check whether an input parameter ``g`` is a supported group and raise a
+    :py:exc:`TypeError` otherwise.
+    """
+    if not isinstance(g, Group):
+        raise TypeError(f"{type(g)} is not a supported group type.")
